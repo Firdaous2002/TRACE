@@ -1,0 +1,243 @@
+data:
+  dataset: ml-1m           # ml-100k | ml-1m | steam
+  data_dir: ./data/processed
+  max_len: 50
+  min_interactions: 5      # k-core filtering
+
+model:
+  name: sasrec             # sasrec | bert4rec | gru4rec
+  # Shared defaults (used if model-specific section doesn't override)
+  hidden_dim: 64
+  num_heads: 2
+  num_layers: 2
+  dropout: 0.2
+
+# Model-specific defaults (all datasets, resolved via 4-level cascade)
+sasrec:
+  hidden_dim: 64
+  num_heads: 2
+  num_layers: 2
+  dropout: 0.2
+  weight_decay: 1.0e-5
+  betas: [0.9, 0.98]
+
+bert4rec:
+  hidden_dim: 64
+  num_heads: 2
+  num_layers: 2
+  dropout: 0.2
+  lr: 0.0001
+  weight_decay: 0.0
+  betas: [0.9, 0.999]
+  batch_size: 256
+
+gru4rec:
+  hidden_dim: 128
+  emb_dim: 64
+  num_gru_layers: 1
+  dropout: 0.10
+  loss_type: bpr-max
+  n_sample: 1024
+  sample_alpha: 0.5
+  bpreg: 1.0
+  session_batch_size: 1024
+  grad_clip: 5.0
+  weight_decay: 1.0e-5
+  betas: [0.9, 0.999]
+  lr: 0.005
+
+training:
+  lr: 0.001
+  batch_size: 1024
+  epochs: 500
+  patience: 8              # early stopping (was 4, raised globally)
+  min_epochs: 10           # never stop before this epoch
+  num_neg: 1
+  checkpoint_dir: ./checkpoints
+  device: cuda             # cuda | cpu
+
+# ---------------------------------------------------------------------------
+# Dataset-specific overrides
+# Cascade: datasets.{dataset}.{model}.{key} > datasets.{dataset}.{key}
+#        > {model}.{key} > training/model/data defaults
+# Only specify values that differ from the model/global defaults above.
+# ---------------------------------------------------------------------------
+datasets:
+  ml-100k:
+    max_len: 100
+    batch_size: 64
+    patience: 4
+    min_epochs: 6
+    sasrec:
+      dropout: 0.30
+      lr: 0.0007
+    bert4rec:
+      batch_size: 64
+      hidden_dim: 128
+      dropout: 0.30
+      lr: 0.0001
+    gru4rec:
+      lr: 0.006
+      n_sample: 64
+      session_batch_size: 1024
+      max_len: 50
+
+  ml-1m:
+    max_len: 100
+    batch_size: 512
+    patience: 5
+    min_epochs: 8
+    sasrec:
+      lr: 0.0007
+    bert4rec:
+      batch_size: 1024
+      lr: 0.0004
+    gru4rec:
+      lr: 0.010
+      n_sample: 64
+      session_batch_size: 4096
+      max_len: 50          # GRU struggles with long sequences
+
+  steam:
+    max_len: 50
+    batch_size: 8192
+    patience: 4
+    min_epochs: 6
+    sasrec:
+      lr: 0.0028
+    bert4rec:
+      batch_size: 8192
+      lr: 0.00028
+    gru4rec:
+      lr: 0.008
+      n_sample: 64
+      hidden_dim: 256
+      emb_dim: 128
+      session_batch_size: 16384
+
+  beauty:
+    max_len: 50
+    batch_size: 2048
+    patience: 5
+    min_epochs: 8
+    sasrec:
+      lr: 0.002
+    bert4rec:
+      batch_size: 1024
+      hidden_dim: 256
+      num_heads: 4
+      dropout: 0.2
+      lr: 0.0007
+      num_layers: 3
+    gru4rec:
+      lr: 0.008
+      n_sample: 64
+      hidden_dim: 256
+      emb_dim: 128
+      session_batch_size: 4096
+
+  sports:
+    max_len: 50
+    batch_size: 2048
+    patience: 4
+    min_epochs: 6
+    sasrec:
+      lr: 0.001
+    bert4rec:
+      batch_size: 2048
+      hidden_dim: 64
+      num_heads: 2
+      dropout: 0.2
+      lr: 0.0005
+      num_layers: 2
+      mask_prob: 0.6
+    gru4rec:
+      batch_size: 1024
+      lr: 0.003
+      n_sample: 64
+      dropout: 0.2
+      hidden_dim: 256
+      emb_dim: 128
+      session_batch_size: 4096
+
+explainer:
+  name: gradient
+  max_edits: 5
+  query_budget: 10000      # max black-box queries per instance (GA needs ~5100 for 50gen)
+  k_pos: 10                # candidate positions
+  k_item: 20               # candidate items per position
+
+targeted:
+  enabled: false
+  constraint: bring_in
+  top_k: 1
+  mode: "easy"
+  rank_min: null
+  rank_max: null
+
+ga:
+  population_size: 100
+  generations: 50
+  mutation_rate: 0.1
+  crossover_rate: 0.5
+  w_edit: 1.0
+  w_logit: 1.0
+  tournament_size: 5
+  elitism_ratio: 0.1
+
+beam:
+  beam_width: 3
+  k_context: 2
+  k_target_nn: 2
+  k_local_nn: 3
+  candidate_strategy: pool
+  position_strategy: all
+  position_top_m: 0
+  influence_gamma: 1.0
+  pacer_shortlist_size: 0
+  pacer_weight_context: 1.0
+  pacer_weight_target: 1.0
+  pacer_weight_local: 0.5
+  eval_batch_size: 256
+
+gradient:
+  alpha: 1.0
+  alpha_search_steps: 5
+  top_k_positions: 3
+  n_candidates_per_position: 5
+  position_selection: gradient
+  item_selection: cosine
+  alpha_search: multi
+  objective_variant: legacy
+  rank_loss_tau: 1.0
+  rank_loss_softplus_tau: 1.0
+  rank_loss_margin: 0.0
+  rank_boundary_band: 2
+  rank_anchor_weight: 0.1
+  use_blocker_loss: true
+  blocker_variant: hard
+  blocker_top_m: 10
+  blocker_tau: 1.0
+  blocker_weight_tau: 1.0
+  blocker_weight: 1.0
+  use_hotflip: true
+  beam_width: 3
+  beam_rerank_factor: 1
+  context_candidate_top_m: 0
+  hotflip_distance_weight: 0.01
+  hotflip_rss_weight: 0.0
+  hotflip_context_weight: 0.0
+  local_cosine_top_m: 0
+  eval_batch_size: 256
+
+evaluation:
+  n_users: 1000            # number of test users to evaluate
+  n_seeds: 3               # random seeds for stochastic methods
+  run_tag: null            # optional suffix for tuning runs, e.g. gb_wide_pos
+  fidelity_k:
+    - 5
+    - 10
+    - 20
+  results_dir: ./results
+
+seed: 42

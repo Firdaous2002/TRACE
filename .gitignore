@@ -1,0 +1,29 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+
+# data / experiment outputs are regenerated
+data/raw/
+data/processed/
+results/*
+!results/paper_numbers.json
+!results/backbone_eval.json
+logs/
+figures/*
+!figures/*.pdf
+!figures/*.png
+
+# checkpoints are shipped with the repo (see checkpoints/) so reviewers can
+# skip the ~4h training stage and run explainers directly
+!checkpoints/
+!checkpoints/*.pt
+
+# editor / OS
+.vscode/
+.idea/
+.DS_Store
+
+# wandb
+wandb/

@@ -1,0 +1,118 @@
+{
+  "schema": "backbone_eval.v1",
+  "generated_at": "2026-04-16T17:56:03Z",
+  "device": "cuda",
+  "models": {
+    "sasrec": {
+      "ml-100k": {
+        "hr10": 0.20042417815482502,
+        "ndcg10": 0.10159598984622248,
+        "num_users": 943,
+        "num_items": 1349,
+        "eval_seconds": 0.24
+      },
+      "ml-1m": {
+        "hr10": 0.3079470198675497,
+        "ndcg10": 0.17754961362737692,
+        "num_users": 6040,
+        "num_items": 3416,
+        "eval_seconds": 0.07
+      },
+      "steam": {
+        "hr10": 0.13481028412929838,
+        "ndcg10": 0.07262055448853127,
+        "num_users": 281210,
+        "num_items": 11961,
+        "eval_seconds": 3.39
+      },
+      "beauty": {
+        "hr10": 0.08438044985019899,
+        "ndcg10": 0.0519316594108019,
+        "num_users": 22363,
+        "num_items": 12101,
+        "eval_seconds": 0.26
+      },
+      "sports": {
+        "hr10": 0.043260857351536605,
+        "ndcg10": 0.024280818664925145,
+        "num_users": 35598,
+        "num_items": 18357,
+        "eval_seconds": 0.42
+      }
+    },
+    "bert4rec": {
+      "ml-100k": {
+        "hr10": 0.15058324496288442,
+        "ndcg10": 0.07467877194838458,
+        "num_users": 943,
+        "num_items": 1349,
+        "eval_seconds": 0.02
+      },
+      "ml-1m": {
+        "hr10": 0.19056291390728478,
+        "ndcg10": 0.09759027503973601,
+        "num_users": 6040,
+        "num_items": 3416,
+        "eval_seconds": 0.08
+      },
+      "steam": {
+        "hr10": 0.10639024216777497,
+        "ndcg10": 0.054665398837653485,
+        "num_users": 281210,
+        "num_items": 11961,
+        "eval_seconds": 3.6
+      },
+      "beauty": {
+        "hr10": 0.058444752492957115,
+        "ndcg10": 0.03320087580355038,
+        "num_users": 22363,
+        "num_items": 12101,
+        "eval_seconds": 0.42
+      },
+      "sports": {
+        "hr10": 0.042137198719029156,
+        "ndcg10": 0.022688833176101805,
+        "num_users": 35598,
+        "num_items": 18357,
+        "eval_seconds": 0.43
+      }
+    },
+    "gru4rec": {
+      "ml-100k": {
+        "hr10": 0.16542948038176034,
+        "ndcg10": 0.08326737574782629,
+        "num_users": 943,
+        "num_items": 1349,
+        "eval_seconds": 0.03
+      },
+      "ml-1m": {
+        "hr10": 0.2445364238410596,
+        "ndcg10": 0.13954389924245164,
+        "num_users": 6040,
+        "num_items": 3416,
+        "eval_seconds": 0.05
+      },
+      "steam": {
+        "hr10": 0.11960812204402405,
+        "ndcg10": 0.06441093406977039,
+        "num_users": 281210,
+        "num_items": 11961,
+        "eval_seconds": 3.88
+      },
+      "beauty": {
+        "hr10": 0.06023342127621518,
+        "ndcg10": 0.0355447946537033,
+        "num_users": 22363,
+        "num_items": 12101,
+        "eval_seconds": 0.26
+      },
+      "sports": {
+        "hr10": 0.03606944210348896,
+        "ndcg10": 0.020532838533491127,
+        "num_users": 35598,
+        "num_items": 18357,
+        "eval_seconds": 0.48
+      }
+    }
+  }
+}
