@@ -228,7 +228,6 @@ If this repository is useful in your research, please cite:
   booktitle = {Proceedings of the 20th ACM Conference on Recommender Systems},
   year      = {2026},
   publisher = {Association for Computing Machinery},
-  address   = {New York, NY, USA},
   doi       = {10.1145/3773078.3831796},
   isbn      = {979-8-4007-2284-4/2026/09}
 }
