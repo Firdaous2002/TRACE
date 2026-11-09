@@ -27,3 +27,6 @@ figures/*
 
 # wandb
 wandb/
+
+logs/
+results_test/

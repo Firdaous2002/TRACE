@@ -166,12 +166,14 @@ class GreedyExplainer(BaseExplainer):
                 is_valid = (final_top1 == target_rec) if target_rec is not None else (final_top1 != original_rec)
 
         cf_seq = s if is_valid else None
+        ed = hamming_distance(original_seq, s)
         info = {
             'method': 'greedy',
             'valid': is_valid,
-            'edit_distance': hamming_distance(original_seq, s) if is_valid else hamming_distance(original_seq, s),
+            'edit_distance': ed,
             'queries_used': self.query_count,
             'target_rec': constraint.item if constraint is not None and constraint.kind == 'bring_in' else target_rec,
+            'top_k_cfs': [{'seq': list(s), 'edit_distance': ed, 'valid': True}] if is_valid else [],
         }
         if constraint is not None:
             info['rank_constraint'] = {

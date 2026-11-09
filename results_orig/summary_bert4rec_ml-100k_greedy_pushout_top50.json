@@ -1,0 +1,18 @@
+{
+  "greedy": {
+    "delta_nll_mean": 0.20138195616926602,
+    "delta_nll_std": 0.0,
+    "hamming_mean_mean": 1.3687374749498997,
+    "hamming_mean_std": 0.0,
+    "hamming_std_mean": 0.5839405640843965,
+    "hamming_std_std": 0.0,
+    "queries_mean": 1749.936,
+    "queries_std": 0.0,
+    "time_seconds_mean": 79.39414739608765,
+    "time_seconds_std": 0.0,
+    "validity_mean": 0.998,
+    "validity_std": 0.0,
+    "validity_rate_mean": 0.998,
+    "validity_rate_std": 0.0
+  }
+}

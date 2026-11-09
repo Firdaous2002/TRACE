@@ -175,9 +175,10 @@ def extract_saved_cf_sequences(method: str, per_user_by_uid: Dict[int, Dict]) ->
     # the paper — return None for every uid so compute_user_metrics leaves
     # delta_nll unset for those methods.
     seq_by_uid: Dict[int, Optional[List[int]]] = {}
+    n_missing = 0
     for uid, row in per_user_by_uid.items():
         valid = bool(row.get("valid", False))
-        if not valid or method not in ("ga", "gradient", "beam"):
+        if not valid or method not in ("ga", "gradient", "beam", "greedy"):
             seq_by_uid[uid] = None
             continue
 
@@ -194,7 +195,10 @@ def extract_saved_cf_sequences(method: str, per_user_by_uid: Dict[int, Dict]) ->
             seq_by_uid[uid] = cf_entry["seq"]
         else:
             seq_by_uid[uid] = None
-            warn(f"{method}: missing top_k_cfs seq for uid={uid}; treating as invalid for continuous metrics")
+            n_missing += 1
+            if n_missing:
+                warn(f"{method}: {n_missing} valid users have no saved top_k_cfs seq; their ΔNLL is left out "
+             f"(rerun {method} with the current code to save edited histories)")
     return seq_by_uid
 
 
