@@ -102,6 +102,9 @@ def _build_user_rank_constraint(preds: List[int], rank_constraint: Optional[Dict
         if rank_window is not None:
             spec['rank_min'] = lo_rank
             spec['rank_max'] = hi_rank
+        # Movies whose insertion would only hide them: the target and every movie ranked above it.
+        if target_item is not None and target_item in preds:
+            spec['forbidden_items'] = [int(i) for i in preds[:preds.index(target_item) + 1]]
         return spec
 
     if kind == 'push_out':
@@ -109,6 +112,7 @@ def _build_user_rank_constraint(preds: List[int], rank_constraint: Optional[Dict
             'kind': 'push_out',
             'top_k': max(1, int(rank_constraint.get('top_k', 1))),
             'target_item': int(preds[0]) if preds else None,
+            'forbidden_items': [int(preds[0])] if preds else [],
         }
 
     raise ValueError(f"Unknown rank constraint kind: {kind}")
@@ -295,6 +299,13 @@ def run_explanation_for_users(
         explainer_rank_constraint = _to_explainer_rank_constraint(user_rank_constraint)
         target_rec = target_recs.get(uid) if user_rank_constraint is not None and user_rank_constraint.get('kind') == 'bring_in' else None
         user_items = set(seq)
+        # Loophole fix (off by default): movies whose insertion would only hide them
+        # are treated as already watched, so no method can insert them.
+        forbidden = set()
+        if explainer.forbid_constraint_items and user_rank_constraint is not None:
+            forbidden = set(user_rank_constraint.get('forbidden_items', []))
+        user_items |= forbidden
+        explainer.forbidden_items = forbidden
 
         if uses_model_candidate_mode:
             cf_seq, info = explainer.explain(

@@ -92,6 +92,8 @@ class BaseExplainer(ABC):
         self.query_budget = query_budget
         self.device = device
         self.query_count = 0  # track black-box queries per instance
+        self.forbid_constraint_items = False  # loophole-fix switch (set from the config)
+        self.forbidden_items = set()          # movies this user's explanation may not insert
 
     def reset_query_count(self):
         """Reset the query counter for a new instance."""

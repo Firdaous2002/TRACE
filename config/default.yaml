@@ -165,7 +165,8 @@ explainer:
   max_edits: 5
   query_budget: 10000      # max black-box queries per instance (GA needs ~5100 for 50gen)
   k_pos: 10                # candidate positions
-  k_item: 20               # candidate items per position
+  k_item: 20               # candidate items per position              
+  forbid_constraint_items: false   # loophole fix: never insert the target or movies ranked above it
 
 targeted:
   enabled: false

@@ -44,6 +44,7 @@ def run_single_explainer(
     num_items = info['num_items']
 
     explainer = build_explainer(cfg, model, num_items)
+    explainer.forbid_constraint_items = bool(cfg.explainer.get('forbid_constraint_items', False))
     rank_constraint = get_rank_constraint_spec(cfg=cfg)
 
     model_max_len = getattr(model, 'max_len', max_len)

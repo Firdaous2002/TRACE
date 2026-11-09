@@ -242,6 +242,7 @@ class BeamSearchExplainer(BaseExplainer):
         tgt_nn: Sequence[int],
     ) -> List[int]:
         preferred_item = constraint.item if constraint.kind == 'bring_in' else None
+        blocked = seq_items | self.forbidden_items   # loophole fix: same as seq_items unless the switch is on
         use_cosine = self.candidate_strategy in {'cosine_mixed', 'hybrid', 'pacer_lite'}
         use_pool = self.candidate_strategy in {'pool', 'hybrid', 'pacer_lite'}
 
@@ -253,7 +254,7 @@ class BeamSearchExplainer(BaseExplainer):
         if use_pool:
             pool_candidates = self._pool_candidates(
                 candidate_pool,
-                seq_items,
+                blocked,
                 seq[pos],
                 limit=max(0, self.k_target_nn + self.k_local_nn),
                 preferred_item=preferred_item,
@@ -263,7 +264,7 @@ class BeamSearchExplainer(BaseExplainer):
             pool_candidates,
             tgt_nn if use_cosine else [],
             local_nn,
-            seq_items,
+            blocked,
             seq[pos],
         )
         if self.candidate_strategy != 'pacer_lite' or not merged:
