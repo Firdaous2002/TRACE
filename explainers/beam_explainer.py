@@ -229,6 +229,13 @@ class BeamSearchExplainer(BaseExplainer):
                 seen.add(item)
                 merged.append(item)
         return merged
+    
+    def _forbidden_now(self, scores: torch.Tensor, constraint: RankConstraint) -> Set[int]:
+        """Loophole fix, part 2: in bring-in, also forbid movies that are above the target right now."""
+        if not self.forbid_constraint_items or constraint.kind != 'bring_in':
+            return self.forbidden_items
+        above = (scores > scores[constraint.item]).nonzero().flatten().tolist()
+        return self.forbidden_items | set(above)
 
     def _build_shortlist(
         self,
@@ -387,7 +394,8 @@ class BeamSearchExplainer(BaseExplainer):
             for seq, edits in beam:
                 scores = cache[seq]
                 seq_items = {item for item in seq if item != 0}
-                exclude_items = sorted(seq_items | self.forbidden_items)
+                blocked_here = seq_items | self._forbidden_now(scores, constraint)
+                exclude_items = sorted(blocked_here)
                 ctx_candidates = self._context_candidates(scores, exclude_items)
                 edited_pos = {e[0] for e in edits}
                 candidate_positions = [pos for pos in editable if pos not in edited_pos]
@@ -404,7 +412,7 @@ class BeamSearchExplainer(BaseExplainer):
                         seq,
                         pos,
                         scores,
-                        seq_items,
+                        blocked_here,
                         ctx_candidates,
                         candidate_pool,
                         constraint,
