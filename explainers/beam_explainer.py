@@ -387,7 +387,7 @@ class BeamSearchExplainer(BaseExplainer):
             for seq, edits in beam:
                 scores = cache[seq]
                 seq_items = {item for item in seq if item != 0}
-                exclude_items = sorted(seq_items)
+                exclude_items = sorted(seq_items | self.forbidden_items)
                 ctx_candidates = self._context_candidates(scores, exclude_items)
                 edited_pos = {e[0] for e in edits}
                 candidate_positions = [pos for pos in editable if pos not in edited_pos]
