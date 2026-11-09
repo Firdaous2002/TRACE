@@ -137,6 +137,22 @@ def _rank_constraint_is_satisfied(model, cf_seq: Optional[List[int]], rank_const
         return int(target_item) in preds
     raise ValueError(f"Unknown rank constraint kind: {rank_constraint.get('kind')}")
 
+def _hides_competitor(model, original_seq: List[int], cf_seq: List[int], target_item: int, device: str) -> bool:
+    """Referee check (loophole fix, part 3): take each inserted movie back out again.
+    If that movie would then rank above the target, the explanation only hid a competitor."""
+    original_items = set(original_seq)
+    for pos, (old, new) in enumerate(zip(original_seq, cf_seq)):
+        if new == 0 or new == old or new in original_items:
+            continue  # not a newly inserted movie
+        probe = list(cf_seq)
+        probe[pos] = old
+        with torch.no_grad():
+            scores = model.predict(torch.tensor([probe], dtype=torch.long, device=device))[0].float()
+        scores[0] = -float('inf')
+        scores[[item for item in probe if item != 0]] = -float('inf')
+        if scores[new] > scores[int(target_item)]:
+            return True
+    return False
 
 def _to_explainer_rank_constraint(rank_constraint: Optional[Dict[str, Any]]) -> Optional[RankConstraint]:
     if rank_constraint is None:
@@ -361,6 +377,14 @@ def run_explanation_for_users(
             info['constraint_item'] = user_rank_constraint.get('target_item')
             if user_rank_constraint.get('kind') == 'push_out' or int(user_rank_constraint.get('top_k', 1)) != 1:
                 info['valid'] = _rank_constraint_is_satisfied(model, cf_seq, user_rank_constraint, device)
+        # Referee (loophole fix, part 3), the same rule for every method: always measured,
+        # but only counted as a failure when the switch is on.
+        if (info.get('valid') and cf_seq is not None and user_rank_constraint is not None
+                and user_rank_constraint.get('kind') == 'bring_in'):
+            info['hides_competitor'] = _hides_competitor(model, input_seq, cf_seq, user_rank_constraint['target_item'], device)
+            if info['hides_competitor'] and explainer.forbid_constraint_items:
+                info['valid'] = False
+                cf_seq = None
         results.append(info)
         if info.get('valid', False):
             valid_so_far += 1
