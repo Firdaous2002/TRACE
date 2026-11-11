@@ -286,7 +286,7 @@ def run_explanation_for_users(
     all_items = list(range(1, model.num_items + 1))
     score_positions_fn = None
     explainer_name = explainer.__class__.__name__
-    uses_model_candidate_mode = explainer_name in ('GAExplainer', 'GradientExplainer')
+    uses_model_candidate_mode = explainer_name in ('GAExplainer', 'GradientExplainer', 'HeuristicExplainer')
     if position_selection == 'score_drop':
         score_positions_fn = importlib.import_module('utils.item_candidates').score_positions
 

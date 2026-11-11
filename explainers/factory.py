@@ -108,4 +108,14 @@ def build_explainer(cfg, model, num_items: int):
             query_budget=query_budget,
             device=device,
         )
+    if name =='heuristic':
+        cls = getattr(importlib.import_module('explainers.heuristic_explainer'), 'HeuristicExplainer')
+        return cls(
+            model=model,
+            num_items=num_items,
+            max_edits=max_edits,
+            query_budget=query_budget,
+            device=device,
+        )
+
     raise ValueError(f"Unknown explainer: {name}")

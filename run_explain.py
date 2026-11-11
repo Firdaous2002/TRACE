@@ -131,7 +131,7 @@ def main():
 
     print(f"Loaded {model_name} trained on {dataset}")
 
-    explainer_names = ['random', 'greedy', 'ga', 'beam', 'gradient'] if args.all_explainers else [cfg.explainer.name]
+    explainer_names = ['random', 'greedy', 'ga', 'beam', 'gradient', 'heuristic'] if args.all_explainers else [cfg.explainer.name]
 
     results_dir = ensure_dir(cfg.evaluation.results_dir)
 
@@ -221,6 +221,7 @@ def main():
             'ga': 'ga',
             'beam': 'no-grad beam',
             'gradient': 'grad-beam',
+            'heuristic': 'baseline_heuristic',
         }
         print(f"\n{'='*60}")
         print(f"Comparison: {model_name} on {dataset}")
