@@ -3,6 +3,10 @@ import torch.nn.functional as F
 
 from .base import BaseExplainer, hamming_distance
 
+# Parameter to activate debugging. A diagnosis print is added and no full
+# run is performed.
+DEBUG = True
+
 
 class HeuristicExplainer(BaseExplainer):
     """
@@ -24,6 +28,8 @@ class HeuristicExplainer(BaseExplainer):
         self,
         original_seq,
         original_rec,
+        candidate_positions,
+        candidate_items,
         target_rec=None,
         rank_constraint=None,
     ):
@@ -43,10 +49,7 @@ class HeuristicExplainer(BaseExplainer):
             }
 
         # Filter out the embedding positions
-        positions = [
-            p for p, item in enumerate(original_seq)
-            if item != 0
-        ]
+        positions = [p for p, item in enumerate(original_seq) if item != 0]
 
         max_attempts = min(5, self.max_edits, len(positions), self.query_budget)
 
@@ -109,12 +112,45 @@ class HeuristicExplainer(BaseExplainer):
             # Grap here the most recent position. Use negative indexing because most recent position is last item in the list
             edited_positions = positions[-j:]
 
-            # Apply reserve to get most recent item at the front of the list
+            # Apply reverse to get most recent item at the front of the list
             for pos, item in zip(reversed(edited_positions), candidates[:j]):
                 cf_seq[pos] = item
 
             scores = self.get_scores(cf_seq)
             self.mask_scores_inplace(scores, cf_seq)
+
+            target_score = scores[constraint.item]
+            target_rank = int((scores > target_score).sum().item()) + 1
+
+            if DEBUG:
+                print(f"\n--- Attempt j={j} ---")
+                print(f"Reference item: {reference_item}")
+                print(f"Constraint: {constraint.kind}")
+
+                print("\nSubstituted items:")
+                for pos in reversed(edited_positions):
+                    item = cf_seq[pos]
+                    similarity = similarities[item - 1].item()
+
+                    print(
+                        f"  Position {pos}: "
+                        f"item {item}, "
+                        f"cosine similarity with reference = {similarity:.4f}"
+                    )
+
+                print("\nTarget recommendation:")
+                print(f"  Item ID: {constraint.item}")
+                print(f"  Score: {target_score.item():.4f}")
+                print(f"  Rank: {target_rank}")
+
+                print("\nTop 10 recommendations:")
+                top_items = torch.argsort(scores, descending=True)[:10]
+
+                for item_id in top_items:
+                    print(
+                        f"  Item {item_id.item()}: "
+                        f"score = {scores[item_id].item():.4f}"
+                    )
 
             if constraint.is_satisfied(scores):
                 edit_distance = hamming_distance(

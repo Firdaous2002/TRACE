@@ -4,7 +4,7 @@
 #SBATCH --gpus=1
 #SBATCH --job-name=exp_base_heuristic
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=32
+#SBATCH --cpus-per-task=18
 #SBATCH --time=04:00:00
 #SBATCH --output=ours/logs/explain_baseline_heuristic_%A.out
 
@@ -24,23 +24,23 @@ python run_explain.py \
     targeted.rank_max=50 \
     explainer.max_edits=5 \
     explainer.query_budget=10000 \
-    explainer.forbid_constraint_items=false \
+    explainer.forbid_constraint_items=true \
     evaluation.n_users=500 \
     evaluation.n_seeds=1 \
     seed=42
 
-# python run_explain.py \
-#     model.name=sasrec \
-#     data.dataset=ml-1m \
-#     explainer.name=heuristic \
-#     targeted.enabled=true \
-#     targeted.constraint=push_out \
-#     targeted.rank_min=1 \
-#     targeted.rank_max=1 \
-#     explainer.max_edits=5 \
-#     explainer.query_budget=10000 \
-#     explainer.forbid_constraint_items=false \
-#     evaluation.n_users=500 \
-#     evaluation.n_seeds=1 \
-#     seed=42
+python run_explain.py \
+    model.name=sasrec \
+    data.dataset=ml-1m \
+    explainer.name=heuristic \
+    targeted.enabled=true \
+    targeted.constraint=push_out \
+    targeted.rank_min=1 \
+    targeted.rank_max=1 \
+    explainer.max_edits=5 \
+    explainer.query_budget=10000 \
+    explainer.forbid_constraint_items=true \
+    evaluation.n_users=500 \
+    evaluation.n_seeds=1 \
+    seed=42
 

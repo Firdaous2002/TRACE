@@ -43,6 +43,8 @@ class RandomExplainer(BaseExplainer):
             }
             return None, info
 
+        candidate_positions = [pos for pos in candidate_positions if original_seq[pos] not in self.forbidden_items]
+
         # Single random position
         pos = random.choice(candidate_positions)
         items = candidate_items.get(pos, [])

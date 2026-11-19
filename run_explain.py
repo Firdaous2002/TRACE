@@ -201,10 +201,11 @@ def main():
                 'metrics': metrics,
                 'per_user': [
                     {
-                        **{k: v for k, v in r.items() if k != 'cf_seq'},
-                        'target_rec': r.get('target_rec'),
+                        **r,
+                        'original_seq': run_results['original_seqs'][i],
+                        'cf_seq': run_results['cf_seqs'][i],
                     }
-                    for r in run_results['per_user_results']
+                    for i, r in enumerate(run_results['per_user_results'])
                 ],
             }
             save_json(save_path, save_data)
