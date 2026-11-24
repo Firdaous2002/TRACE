@@ -1,0 +1,18 @@
+{
+  "heuristic": {
+    "delta_nll_mean": 0.23744785424434778,
+    "delta_nll_std": 0.0,
+    "hamming_mean_mean": 2.1818181818181817,
+    "hamming_mean_std": 0.0,
+    "hamming_std_mean": 1.1665682760557672,
+    "hamming_std_std": 0.0,
+    "queries_mean": 4.468,
+    "queries_std": 0.0,
+    "time_seconds_mean": 448.2253541946411,
+    "time_seconds_std": 0.0,
+    "validity_mean": 0.066,
+    "validity_std": 0.0,
+    "validity_rate_mean": 0.066,
+    "validity_rate_std": 0.0
+  }
+}

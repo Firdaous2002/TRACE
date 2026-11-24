@@ -1,0 +1,18 @@
+{
+  "random": {
+    "delta_nll_mean": 0.0905798077583313,
+    "delta_nll_std": 0.0,
+    "hamming_mean_mean": 1.0,
+    "hamming_mean_std": 0.0,
+    "hamming_std_mean": 0.0,
+    "hamming_std_std": 0.0,
+    "queries_mean": 1.0,
+    "queries_std": 0.0,
+    "time_seconds_mean": 1.5401065349578857,
+    "time_seconds_std": 0.0,
+    "validity_mean": 0.016,
+    "validity_std": 0.0,
+    "validity_rate_mean": 0.016,
+    "validity_rate_std": 0.0
+  }
+}
