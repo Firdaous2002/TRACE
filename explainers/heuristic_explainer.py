@@ -5,7 +5,7 @@ from .base import BaseExplainer, hamming_distance
 
 # Parameter to activate debugging. A diagnosis print is added and no full
 # run is performed.
-DEBUG = True
+DEBUG = False
 
 
 class HeuristicExplainer(BaseExplainer):

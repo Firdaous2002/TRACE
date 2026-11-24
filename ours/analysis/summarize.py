@@ -8,9 +8,9 @@ args = [a for a in sys.argv[1:] if not a.startswith('--')]
 res_dir = args[0] if args else 'results'
 csv_out = sys.argv[sys.argv.index('--csv') + 1] if '--csv' in sys.argv else None
 
-PAT = re.compile(r'explain_(sasrec|bert4rec|gru4rec)_(.+)_(beam|ga|greedy|random|gradient)_'
+PAT = re.compile(r'explain_(sasrec|bert4rec|gru4rec)_(.+)_(beam|ga|greedy|random|gradient|heuristic)_'
                  r'(targeted_r\d+_\d+|pushout_top\d+)_seed(\d+)\.json$')
-NAME = {'beam': 'TRACE', 'ga': 'GECE', 'greedy': 'Greedy', 'random': 'Random', 'gradient': 'Gradient'}
+NAME = {'beam': 'TRACE', 'ga': 'GECE', 'greedy': 'Greedy', 'random': 'Random', 'gradient': 'Gradient', 'heuristic': 'Baseline_heuristic'}
 
 rows, groups = [], defaultdict(list)
 for f in sorted(glob.glob(os.path.join(res_dir, 'explain_*.json'))):
