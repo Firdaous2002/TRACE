@@ -11,3 +11,6 @@
 - Table 1 reproduced: 14/15 combos match to 4 decimals (A100, torch 2.10+cu128).
   BERT4Rec/Steam: ours HR@10 .1064 / NDCG@10 .0547 = authors' repo files;
   the paper PDF reports .1249 / .0662 -> reporting error in the PDF.
+- Push-out cutoff: the code reads K from targeted.top_k (default 1). scripts/reproduce_main.sh never sets it,
+  so the authors' script runs push-out with K=1, while the paper and generate_figures.py use K=50.
+  Our job lists set targeted.top_k=50 for push-out.
